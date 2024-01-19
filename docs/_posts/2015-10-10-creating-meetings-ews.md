@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Creating Meetings in EWS (Exchange Web Services)"
-author: Erik Elkins
+author: erik
 categories: [ EWS ]
 comments: false
 ---

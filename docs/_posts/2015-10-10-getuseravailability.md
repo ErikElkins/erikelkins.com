@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Get Meetings for a Room (GetUserAvailability) EWS"
-author: Erik Elkins
+author: erik
 categories: [ EWS ]
 comments: false
 ---

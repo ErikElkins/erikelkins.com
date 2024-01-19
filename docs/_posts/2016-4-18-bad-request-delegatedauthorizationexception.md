@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "How to fix VSTS API 400 Bad Request DelegatedAuthorizationException"
-author: Erik Elkins
+author: erik
 categories: [ VSTS ]
 comments: false
 ---
