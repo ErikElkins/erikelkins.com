@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Side-loading an appx package onto Windows 10"
-author: Erik Elkins
+author: erik
 categories: [ UWP ]
 comments: false
 ---
