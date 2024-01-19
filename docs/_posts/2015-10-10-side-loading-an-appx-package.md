@@ -3,6 +3,7 @@ layout: post
 title:  "Side-loading an appx package onto Windows 10"
 author: Erik Elkins
 categories: [ UWP ]
+comments: false
 ---
 
 I was running into a problem with Heep that only affected the deployed app in the store and not while debugging. So I wanted to side-load the `appx` package so i could reproduce the issue, turns out it’s very easy to accomplish…

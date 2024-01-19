@@ -3,6 +3,7 @@ layout: post
 title:  "Get Meetings for a Room (GetUserAvailability) EWS"
 author: Erik Elkins
 categories: [ EWS ]
+comments: false
 ---
 
 Back again with and Exchange Web Services (EWS) post. This covered what seemed like a difficult thing to do, that is, to get a room’s availability. I did find a post for doing such a thing (link), but I think I’d like to do it differently. First, just like every other EWS call, we need to initialize the `ExchangeServiceBinding`.

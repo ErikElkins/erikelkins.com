@@ -3,6 +3,7 @@ layout: post
 title:  "Creating Meetings in EWS (Exchange Web Services)"
 author: Erik Elkins
 categories: [ EWS ]
+comments: false
 ---
 
 This last week I’ve been playing around with Exchange Web Services, and if you’ve ever had the pleasure, then you know resources are thin. So I may be making another one or two posts on the subject. Here’s how I’m able to create a meeting. First things first, you’ll need to initialize the `ExchangeServiceBinding`.

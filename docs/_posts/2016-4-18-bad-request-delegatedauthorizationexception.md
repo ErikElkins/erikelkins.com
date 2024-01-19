@@ -3,6 +3,7 @@ layout: post
 title:  "How to fix VSTS API 400 Bad Request DelegatedAuthorizationException"
 author: Erik Elkins
 categories: [ VSTS ]
+comments: false
 ---
 
 Real quick, I was integrated with the VSTS (Visual Studio Team Services) API by calling `https://app.vssps.visualstudio.com/oauth2/authorize`, and I was getting the following:
