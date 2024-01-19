@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.3">Jekyll</generator><link href="http://localhost:4000/mediumish-theme-jekyll/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/mediumish-theme-jekyll/" rel="alternate" type="text/html" /><updated>2024-01-19T10:30:07-06:00</updated><id>http://localhost:4000/mediumish-theme-jekyll/feed.xml</id><title type="html">Erik Elkins</title><subtitle>Software Engineer at Target</subtitle><entry><title type="html">How to fix VSTS API 400 Bad Request DelegatedAuthorizationException</title><link href="http://localhost:4000/mediumish-theme-jekyll/bad-request-delegatedauthorizationexception/" rel="alternate" type="text/html" title="How to fix VSTS API 400 Bad Request DelegatedAuthorizationException" /><published>2016-04-18T00:00:00-05:00</published><updated>2016-04-18T00:00:00-05:00</updated><id>http://localhost:4000/mediumish-theme-jekyll/bad-request-delegatedauthorizationexception</id><content type="html" xml:base="http://localhost:4000/mediumish-theme-jekyll/bad-request-delegatedauthorizationexception/"><![CDATA[<p>Real quick, I was integrated with the VSTS (Visual Studio Team Services) API by calling <code class="language-plaintext highlighter-rouge">https://app.vssps.visualstudio.com/oauth2/authorize</code>, and I was getting the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>400 Bad Request:
+
+Exception of type ‘Microsoft.VisualStudio.Services.Web.Profile.Controllers.DelegatedAuthorizationException’ was thrown.
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Not a super helpful error message, but the fix was simple.</p>
+
+<ol>
+  <li>Make sure all your parameter names are spelled correctly, and that the <code class="language-plaintext highlighter-rouge">redirect_uri</code> parameter matches exactly what you defined when you registered your app here: <a href="https://app.vssps.visualstudio.com/app/register">https://app.vssps.visualstudio.com/app/register</a>.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">redirect_uri</code> that you registered and the paramater your passing in both have to be <code class="language-plaintext highlighter-rouge">https</code>.</li>
+</ol>]]></content><author><name>Erik Elkins</name></author><category term="VSTS" /><summary type="html"><![CDATA[Real quick, I was integrated with the VSTS (Visual Studio Team Services) API by calling https://app.vssps.visualstudio.com/oauth2/authorize, and I was getting the following:]]></summary></entry><entry><title type="html">Creating Meetings in EWS (Exchange Web Services)</title><link href="http://localhost:4000/mediumish-theme-jekyll/creating-meetings-ews/" rel="alternate" type="text/html" title="Creating Meetings in EWS (Exchange Web Services)" /><published>2015-10-10T00:00:00-05:00</published><updated>2015-10-10T00:00:00-05:00</updated><id>http://localhost:4000/mediumish-theme-jekyll/creating-meetings-ews</id><content type="html" xml:base="http://localhost:4000/mediumish-theme-jekyll/creating-meetings-ews/"><![CDATA[<p>This last week I’ve been playing around with Exchange Web Services, and if you’ve ever had the pleasure, then you know resources are thin. So I may be making another one or two posts on the subject. Here’s how I’m able to create a meeting. First things first, you’ll need to initialize the <code class="language-plaintext highlighter-rouge">ExchangeServiceBinding</code>.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kt">var</span> <span class="n">Binding</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ExchangeServiceBinding</span><span class="p">();</span> 
+<span class="n">Binding</span><span class="p">.</span><span class="n">Credentials</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">NetworkCredential</span><span class="p">(</span><span class="s">"UserName"</span><span class="p">,</span> <span class="s">"Password"</span><span class="p">,</span> <span class="s">"domain"</span><span class="p">);</span> 
+<span class="n">Binding</span><span class="p">.</span><span class="n">Url</span> <span class="p">=</span> <span class="s">@"https://server/EWS/exchange.asmx"</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Server in this case would be the server name of the Exchange server you’re trying to make a connection with. Next you’ll have to make the <code class="language-plaintext highlighter-rouge">CalendarItemType</code> with the meeting information.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+</pre></td><td class="rouge-code"><pre><span class="kt">var</span> <span class="n">meeting</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CalendarItemType</span> 
+<span class="p">{</span> 
+   <span class="n">Subject</span> <span class="p">=</span> <span class="s">"Meeting name"</span><span class="p">,</span> 
+   <span class="n">Body</span> <span class="p">=</span> <span class="k">new</span> <span class="n">BodyType</span> 
+   <span class="p">{</span>
+      <span class="n">Value</span> <span class="p">=</span> <span class="s">"CalendarItem:TextBody"</span><span class="p">,</span> 
+      <span class="n">BodyType1</span> <span class="p">=</span> <span class="n">BodyTypeType</span><span class="p">.</span><span class="n">Text</span> 
+   <span class="p">},</span> 
+   <span class="n">Start</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">,</span> 
+   <span class="n">StartSpecified</span> <span class="p">=</span> <span class="k">true</span><span class="p">,</span> 
+   <span class="n">End</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">.</span><span class="nf">AddHours</span><span class="p">(</span><span class="m">1</span><span class="p">),</span> 
+   <span class="n">EndSpecified</span> <span class="p">=</span> <span class="k">true</span><span class="p">,</span> 
+   <span class="n">MeetingTimeZone</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TimeZoneType</span> 
+   <span class="p">{</span> 
+      <span class="n">TimeZoneName</span> <span class="p">=</span> <span class="n">TimeZone</span><span class="p">.</span><span class="n">CurrentTimeZone</span><span class="p">.</span><span class="n">StandardName</span><span class="p">,</span> 
+      <span class="n">BaseOffset</span> <span class="p">=</span> <span class="s">"PT6H"</span> <span class="c1">// Central </span>
+   <span class="p">},</span> 
+   <span class="n">Location</span> <span class="p">=</span> <span class="s">"Meeting Room Name"</span><span class="p">,</span> 
+   <span class="n">RequiredAttendees</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> 
+   <span class="p">{</span> 
+      <span class="k">new</span> <span class="n">AttendeeType</span> 
+      <span class="p">{</span> 
+         <span class="n">Mailbox</span> <span class="p">=</span><span class="k">new</span> <span class="n">EmailAddressType</span> 
+         <span class="p">{</span> 
+            <span class="n">EmailAddress</span> <span class="p">=</span> <span class="s">"test@test.com"</span> 
+         <span class="p">}</span> 
+      <span class="p">}</span> 
+   <span class="p">}</span> 
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>As far as the MeetingTimeZone goes, you’ll have to pass in your time as represented by <code class="language-plaintext highlighter-rouge">PTXH</code> (<code class="language-plaintext highlighter-rouge">PT0H</code> for utc, <code class="language-plaintext highlighter-rouge">PT6H</code>, etc). Location will be a string, and will not be resolved. So if you want that room to be reserved then you’ll have to add it as an attendee, along with any other attendees you want to add. Next, you’ll have to create the <code class="language-plaintext highlighter-rouge">CreateItemType</code> containing the recently created <code class="language-plaintext highlighter-rouge">CalendarItemType</code>.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="kt">var</span> <span class="n">request</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CreateItemType</span> 
+<span class="p">{</span> 
+   <span class="n">SendMeetingInvitations</span> <span class="p">=</span> <span class="n">CalendarItemCreateOrDeleteOperationType</span><span class="p">.</span><span class="n">SendToAllAndSaveCopy</span><span class="p">,</span> 
+   <span class="n">SendMeetingInvitationsSpecified</span> <span class="p">=</span> <span class="k">true</span><span class="p">,</span> 
+   <span class="n">SavedItemFolderId</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TargetFolderIdType</span> 
+   <span class="p">{</span> 
+      <span class="n">Item</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DistinguishedFolderIdType</span> 
+      <span class="p">{</span> 
+         <span class="n">Id</span> <span class="p">=</span> <span class="n">DistinguishedFolderIdNameType</span><span class="p">.</span><span class="n">calendar</span> 
+      <span class="p">}</span> 
+   <span class="p">},</span> 
+   <span class="n">Items</span> <span class="p">=</span> <span class="k">new</span> <span class="n">NonEmptyArrayOfAllItemsType</span> 
+   <span class="p">{</span> 
+      <span class="n">Items</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ItemType</span><span class="p">[]</span> 
+      <span class="p">{</span> 
+         <span class="n">meeting</span> 
+      <span class="p">}</span> 
+   <span class="p">}</span> 
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Now you’re ready to make the request.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">CreateItemResponseType</span> <span class="n">response</span> <span class="p">=</span> <span class="n">Binding</span><span class="p">.</span><span class="nf">CreateItem</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>From there you’ll be able to check if the response’s first item is of type <code class="language-plaintext highlighter-rouge">ResponseClassType.Error</code>, and if not, then you just successfully created a meeting.</p>]]></content><author><name>Erik Elkins</name></author><category term="EWS" /><summary type="html"><![CDATA[This last week I’ve been playing around with Exchange Web Services, and if you’ve ever had the pleasure, then you know resources are thin. So I may be making another one or two posts on the subject. Here’s how I’m able to create a meeting. First things first, you’ll need to initialize the ExchangeServiceBinding.]]></summary></entry><entry><title type="html">Get Meetings for a Room (GetUserAvailability) EWS</title><link href="http://localhost:4000/mediumish-theme-jekyll/getuseravailability/" rel="alternate" type="text/html" title="Get Meetings for a Room (GetUserAvailability) EWS" /><published>2015-10-10T00:00:00-05:00</published><updated>2015-10-10T00:00:00-05:00</updated><id>http://localhost:4000/mediumish-theme-jekyll/getuseravailability</id><content type="html" xml:base="http://localhost:4000/mediumish-theme-jekyll/getuseravailability/"><![CDATA[<p>Back again with and Exchange Web Services (EWS) post. This covered what seemed like a difficult thing to do, that is, to get a room’s availability. I did find a post for doing such a thing (link), but I think I’d like to do it differently. First, just like every other EWS call, we need to initialize the <code class="language-plaintext highlighter-rouge">ExchangeServiceBinding</code>.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="kt">var</span> <span class="n">Binding</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ExchangeServiceBinding</span><span class="p">();</span> 
+<span class="n">Binding</span><span class="p">.</span><span class="n">Credentials</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">NetworkCredential</span><span class="p">(</span><span class="s">"UserName"</span><span class="p">,</span> <span class="s">"Password"</span><span class="p">,</span> <span class="s">"domain"</span><span class="p">);</span> 
+<span class="n">Binding</span><span class="p">.</span><span class="n">Url</span> <span class="p">=</span> <span class="s">@"https://server/EWS/exchange.asmx"</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Now, this next part is where I got tripped up, I wasn’t in the mindset that a room is treated no differently than a user. As such, we can use <code class="language-plaintext highlighter-rouge">GetUserAvailability</code> method on our Binding. Lets get the room’s mailbox next.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="kt">var</span> <span class="n">mbMailbox</span> <span class="p">=</span> <span class="k">new</span> <span class="n">MailboxData</span><span class="p">[]{</span>
+   <span class="k">new</span> <span class="nf">MailboxData</span><span class="p">()</span>
+   <span class="p">{</span>
+      <span class="n">Email</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">EmailAddress</span><span class="p">()</span>
+      <span class="p">{</span>
+         <span class="n">Address</span> <span class="p">=</span> <span class="n">Room</span>
+      <span class="p">}</span>
+   <span class="p">}</span>
+<span class="p">};</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Now that we have the room’s mailbox, we need to build our <code class="language-plaintext highlighter-rouge">GetUserAvailabilityRequestType</code> object to pass to <code class="language-plaintext highlighter-rouge">GetUserAvailability</code>. Lets start by setting the request’s <code class="language-plaintext highlighter-rouge">TimeZone</code> property.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre><span class="n">GetUserAvailabilityRequestType</span> <span class="n">fbRequest</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">GetUserAvailabilityRequestType</span><span class="p">();</span>
+<span class="kt">var</span> <span class="n">timeZone</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SerializableTimeZone</span><span class="p">();</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">DaylightTime</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SerializableTimeZoneTime</span><span class="p">()</span>
+<span class="p">;</span><span class="n">timeZone</span><span class="p">.</span><span class="n">StandardTime</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SerializableTimeZoneTime</span><span class="p">();</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">Bias</span> <span class="p">=</span> <span class="m">360</span><span class="p">;</span> <span class="c1">// Central </span>
+<span class="n">TimetimeZone</span><span class="p">.</span><span class="n">StandardTime</span><span class="p">.</span><span class="n">Bias</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">DaylightTime</span><span class="p">.</span><span class="n">Bias</span> <span class="p">=</span> <span class="p">-</span><span class="m">60</span><span class="p">;</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">DaylightTime</span><span class="p">.</span><span class="n">DayOfWeek</span> <span class="p">=</span> <span class="s">"Sunday"</span><span class="p">;</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">DaylightTime</span><span class="p">.</span><span class="n">DayOrder</span> <span class="p">=</span> <span class="m">2</span><span class="p">;</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">DaylightTime</span><span class="p">.</span><span class="n">Month</span> <span class="p">=</span> <span class="m">3</span><span class="p">;</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">DaylightTime</span><span class="p">.</span><span class="n">Time</span> <span class="p">=</span> <span class="s">"00:00:00"</span><span class="p">;</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">StandardTime</span><span class="p">.</span><span class="n">DayOfWeek</span> <span class="p">=</span> <span class="s">"Sunday"</span><span class="p">;</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">StandardTime</span><span class="p">.</span><span class="n">DayOrder</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">StandardTime</span><span class="p">.</span><span class="n">Month</span> <span class="p">=</span> <span class="m">11</span><span class="p">;</span>
+<span class="n">timeZone</span><span class="p">.</span><span class="n">StandardTime</span><span class="p">.</span><span class="n">Time</span> <span class="p">=</span> <span class="s">"23:59:59"</span><span class="p">;</span>
+<span class="n">fbRequest</span><span class="p">.</span><span class="n">TimeZone</span> <span class="p">=</span> <span class="n">timeZone</span><span class="p">;</span>
+<span class="n">fbRequest</span><span class="p">.</span><span class="n">MailboxDataArray</span> <span class="p">=</span> <span class="n">mbMailbox</span><span class="p">;</span> <span class="c1">// created from above</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The post I mentioned above accessed the local machine’s registry to get the current timezone information. I just statically put it in there to lessen the confusion on the subject. Now the last thing we need to do is assign the <code class="language-plaintext highlighter-rouge">FreeBusyViewOptions</code> property of the request object.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="n">Duration</span> <span class="n">fbDuration</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Duration</span><span class="p">();</span>
+<span class="n">fbDuration</span><span class="p">.</span><span class="n">StartTime</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">;</span>
+<span class="n">fbDuration</span><span class="p">.</span><span class="n">EndTime</span> <span class="p">=</span> <span class="n">DateTime</span><span class="p">.</span><span class="n">Now</span><span class="p">.</span><span class="nf">AddDays</span><span class="p">(</span><span class="m">1</span><span class="p">);</span>
+<span class="n">FreeBusyViewOptionsType</span> <span class="n">fbViewOptions</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">FreeBusyViewOptionsType</span><span class="p">();</span>
+<span class="n">fbViewOptions</span><span class="p">.</span><span class="n">TimeWindow</span> <span class="p">=</span> <span class="n">fbDuration</span><span class="p">;</span>
+<span class="n">fbViewOptions</span><span class="p">.</span><span class="n">RequestedView</span> <span class="p">=</span> <span class="n">FreeBusyViewType</span><span class="p">.</span><span class="n">DetailedMerged</span><span class="p">;</span>
+<span class="n">fbViewOptions</span><span class="p">.</span><span class="n">RequestedViewSpecified</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+<span class="n">fbViewOptions</span><span class="p">.</span><span class="n">MergedFreeBusyIntervalInMinutes</span> <span class="p">=</span> <span class="m">30</span><span class="p">;</span>
+<span class="n">fbViewOptions</span><span class="p">.</span><span class="n">MergedFreeBusyIntervalInMinutesSpecified</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+<span class="n">fbRequest</span><span class="p">.</span><span class="n">FreeBusyViewOptions</span><span class="p">=</span> <span class="n">fbViewOptions</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>Now all we do is pass the request object into <code class="language-plaintext highlighter-rouge">GetUserAvailability</code> and get the calendar events that come back:</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kt">var</span> <span class="n">response</span> <span class="p">=</span> <span class="n">Binding</span><span class="p">.</span><span class="nf">GetUserAvailability</span><span class="p">(</span><span class="n">fbRequest</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">events</span> <span class="p">=</span> <span class="n">response</span><span class="p">.</span><span class="n">FreeBusyResponseArray</span><span class="p">[</span><span class="m">0</span><span class="p">].</span><span class="n">FreeBusyView</span><span class="p">.</span><span class="n">CalendarEventArray</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Thats all it really takes. Just loop through the <code class="language-plaintext highlighter-rouge">CalendarEventArray</code>, and you can see the meetings that are taking place in that room inside the duration.</p>]]></content><author><name>Erik Elkins</name></author><category term="EWS" /><summary type="html"><![CDATA[Back again with and Exchange Web Services (EWS) post. This covered what seemed like a difficult thing to do, that is, to get a room’s availability. I did find a post for doing such a thing (link), but I think I’d like to do it differently. First, just like every other EWS call, we need to initialize the ExchangeServiceBinding.]]></summary></entry><entry><title type="html">Side-loading an appx package onto Windows 10</title><link href="http://localhost:4000/mediumish-theme-jekyll/side-loading-an-appx-package/" rel="alternate" type="text/html" title="Side-loading an appx package onto Windows 10" /><published>2015-10-10T00:00:00-05:00</published><updated>2015-10-10T00:00:00-05:00</updated><id>http://localhost:4000/mediumish-theme-jekyll/side-loading-an-appx-package</id><content type="html" xml:base="http://localhost:4000/mediumish-theme-jekyll/side-loading-an-appx-package/"><![CDATA[<p>I was running into a problem with Heep that only affected the deployed app in the store and not while debugging. So I wanted to side-load the <code class="language-plaintext highlighter-rouge">appx</code> package so i could reproduce the issue, turns out it’s very easy to accomplish…</p>
+
+<p>First uninstall any version of your app currently on your machine if you have one. Then make sure the app has a package created, by right clicking the UWP project in Visual Studio, selecting <em>Store</em> &gt; <em>Create App Packages</em> … and follow the wizard. This will probably take a while as it may compile for many architectures.</p>
+
+<p>Then find your solutions folder in windows explorer, and you should see a folder called <code class="language-plaintext highlighter-rouge">AppPackages</code>. Open it and you’ll want to find the package’s folder you want to side-load, in my case it was called <code class="language-plaintext highlighter-rouge">Heep_2.0.0.0_Test</code>. Once inside, there should be a file called <code class="language-plaintext highlighter-rouge">Add-AppDevPackage</code>, right click it and select <code class="language-plaintext highlighter-rouge">Run with Powershell</code>. And you should be set.</p>]]></content><author><name>Erik Elkins</name></author><category term="UWP" /><summary type="html"><![CDATA[I was running into a problem with Heep that only affected the deployed app in the store and not while debugging. So I wanted to side-load the appx package so i could reproduce the issue, turns out it’s very easy to accomplish…]]></summary></entry></feed>
